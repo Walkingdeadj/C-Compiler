@@ -1,4 +1,3 @@
-COMS 440
 Note: it might takes longer to run the program due to pdf generator, if only want run program without pdf, run make mycc instead.
 Part 0: Simple bare-bone compiler
     Files update:
@@ -83,8 +82,6 @@ Part 6: Control Flow
         ./mycc -6 filename              //run part 6
      Notes:
         -no bugs found so far
-
-Notes: There exists some chinese as comments for me to code, I don't have enough time to translate some of those into english and I'm sorry for that inconvenience.
 
 
 
