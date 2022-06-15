@@ -1,0 +1,90 @@
+COMS 440
+Note: it might takes longer to run the program due to pdf generator, if only want run program without pdf, run make mycc instead.
+Part 0: Simple bare-bone compiler
+    Files update:
+        -Source/mycc.c
+        -Source/Makefile
+        -Grading/README
+        -Documentation/Developer.tex
+    
+    Building instructions
+        Running under Source folder
+        make                  //Build mycc.o Developer.pdf(in the Documentation folder)
+        make clean            //Clean all generated files include Developer.pdf
+        ./mycc                //Output standard error as required
+        ./mycc -0             //Output mode 0 (Verision info only for part 0)
+        ./mycc -0 -o          //Output error message
+        ./mycc -0 -o out.txt  //Output txt file in the Source folder and write version info in the file
+    
+    Notes:
+        -All functionality achieved as part 0 HW described
+        -Currently no invalid txt extension file error message and checker since no requirement for this part
+        -All .tex generated files will be out to the Documentation folder.
+
+Part 1: Lexer
+    Files update:
+        -source/mycc.c, Lexer.c, symbol.h, token.h
+    Building instructions
+        Running under Source folder
+        make                            //Build mycc.o Developer.pdf(in the Documentation folder)
+        make clean                      //Clean all generated files include Developer.pdf
+        ./mycc -1 filename              //run part 1
+        ./mycc -1 filename -o out.txt   //Output txt file in the Source folder and write version info in the file
+    Notes:
+        -no bugs found so far
+
+Part 2: Preprocessor
+    File update:
+        -none
+    Building instructions
+        Running under Source folder
+        make                            //Build mycc.o Developer.pdf(in the Documentation folder)
+        make clean                      //Clean all generated files include Developer.pdf
+        ./mycc -2 filename              //run part 2, display the result directly
+     Notes:
+        -no bugs found so far
+
+Part 3: Parser
+       -none
+    Building instructions
+        Running under Source folder
+        make                            //Build mycc.o Developer.pdf(in the Documentation folder)
+        make clean                      //Clean all generated files include Developer.pdf
+        ./mycc -3 filename              //run part 3, display the result directly
+     Notes:
+        -no bugs found so far
+
+Part 4: Type checking
+       -none
+    Building instructions
+        Running under Source folder
+        make                            //Build mycc.o Developer.pdf(in the Documentation folder)
+        make clean                      //Clean all generated files include Developer.pdf
+        ./mycc -4 filename              //run part 4, display the result directly
+     Notes:
+        -no bugs found so far
+
+Part 5: Code generation
+       -none
+    Building instructions
+        Running under Source folder
+        make                            //Build mycc.o Developer.pdf(in the Documentation folder)
+        make clean                      //Clean all generated files include Developer.pdf
+        ./mycc -5 filename              //run part 5
+     Notes:
+        -no bugs found so far
+
+Part 6: Control Flow
+       -none
+    Building instructions
+        Running under Source folder
+        make                            //Build mycc.o Developer.pdf(in the Documentation folder)
+        make clean                      //Clean all generated files include Developer.pdf
+        ./mycc -6 filename              //run part 6
+     Notes:
+        -no bugs found so far
+
+Notes: There exists some chinese as comments for me to code, I don't have enough time to translate some of those into english and I'm sorry for that inconvenience.
+
+
+

@@ -1,0 +1,305 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage{url}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{longtable}
+
+\renewcommand{\topfraction}{0.99}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{muave}{rgb}{0.58,0,0.82}
+\definecolor{dkred}{rgb}{0.6,0,0}
+\definecolor{dkblue}{rgb}{0,0,0.7}
+
+\lstset{frame=none,
+  language=C,
+  % aboveskip=3mm,
+  % belowskip=3mm,
+  xleftmargin=2em,
+  % xrightmargin=2em,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\ttfamily},
+  numbers=left,
+  stepnumber=1,
+  keywordstyle=\color{dkblue},
+  directivestyle=\color{dkred},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{muave},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2
+}
+
+\lstdefinestyle{Output}{
+  % aboveskip=3mm,
+  % belowskip=3mm,
+  xleftmargin=2em,
+  % xrightmargin=2em,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\ttfamily},
+  numbers=none,
+  keywordstyle=,
+  directivestyle=,
+  commentstyle=,
+  stringstyle=,
+  tabsize=2
+}
+
+\newcommand{\gradeline}{ \cline{1-2} \cline{4-4} ~\\[-1.5ex] }
+
+\newenvironment{gradetable}{\begin{longtable}{@{}rrcp{5in}} \multicolumn{2}{l}{\bf Points} & & {\bf Description}\\ \gradeline}{\end{longtable}}
+
+\newcommand{\mainitem}[2]{\pagebreak[2] {\bf #1} &&& {\bf #2}}
+\newcommand{\mainpara}[1]{~ &&& {#1} }
+\newcommand{\inneritem}[2]{~ & #1 && #2}
+\newcommand{\innerpara}[1]{~ & ~ && #1}
+
+\newcommand{\iseasier}{is$^\dagger$ }
+\newcommand{\isextra}{is$^\ddagger$ }
+
+\newcounter{rule}
+
+\newcommand{\rulenumber}[1]{\refstepcounter{rule}R\therule\label{RULE:#1}}
+
+\newcommand{\parser}{3}
+\newcommand{\typecheck}{4}
+\newcommand{\codegen}{5}
+
+
+\title{COMS 440 Compiler Project}
+\author{Jian Shi}
+\date{Apr 2022 (Update Version 5.0)}
+
+\begin{document}
+
+
+\maketitle{}
+
+%======================================================================
+\section{Introduction}
+%======================================================================
+
+\par{Part 0 is about the structure of bare bones compiler}
+\par{Part 1 is about a lexer that recognize the tokens by given in the documentation}
+\par{Part 2 is about C preprocessor that directive possible other text newline includes (\#include, \#define, \#undef, \#ifdef and \#ifndef}
+\par{Part 3 is about C parser that read the specified input file and check that the file has correct C syntax or not}
+\par{Part 4 is about C type checking that read the specified input file and check that the file has correct C syntax and perform type checking on all expressions}
+\par{Part 5 is about C code generation that read the specified input file and check it for correctness. If there are no errors, then the compiler will output an equivalent program in java assembly language}
+
+%======================================================================
+\section{Running and Clean}
+%======================================================================
+
+\par{Running:}
+        \par\hspace*{1cm}"make": will generate executable files (developer.tex in the Documentation folder.)
+        \par\hspace*{1cm}"make mycc": will generate executable files (no developer.tex needed.)
+        \par\hspace*{1cm}"./mycc + [-NUM] + [INFILE]": will run the program (NUM = 0/1/2/3/4/5; INFILE = filename.c.)
+        \par\hspace*{1cm}"make clean": will clean all generate files
+
+\newpage
+%======================================================================
+\section{Part 0}
+%======================================================================
+
+\subsection{Functionality:}
+    \par{-Display for mode 0:}
+        \setlength{\parindent}{2em}
+        \par{   A. compiler name}
+        \par{   B. Author and contact information}
+        \par{   C. a version number and a date of "release"}
+\subsection{Sample output:}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc}
+    \par{Then standard error will display:}
+        \par\hspace*{1cm}{./mycc -mode [options] infile}
+    \par{Valid modes:}
+        \par\hspace*{1cm}{-0: Version information only}
+        \par\hspace*{1cm}{-1: Part 1 C Lexer}
+        \par\hspace*{1cm}{-2: Part 2 C Preprocessor}
+        \par\hspace*{1cm}{-3: Part 3 C parser}
+        \par\hspace*{1cm}{-4: Part 4 Type Checking}
+        \par\hspace*{1cm}{-5: Part 5 expressions}
+    \par{Valid options:}
+        \par\hspace*{1cm}{-o outfile: write to outfile instead of standard output}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -o}
+    \par{Output will include author's info and project's basic info}
+        \par\hspace*{1cm}{My bare-bones C compiler (for COM 440/540)}
+        \par\hspace*{2cm}{Written by Jian Shi (shi@iastate.edu)}
+        \par\hspace*{2cm}{Version 5.0}
+        \par\hspace*{2cm}{15 Apr, 2022}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -0 -o out.txt}
+        \par\hspace*{1cm}{Author's info and project's basic info will be writen into out.txt file}
+        
+\newpage
+%======================================================================
+\section{Part 1}
+%======================================================================
+\subsection{Functionality:}
+    \par{-Display for mode 1:}
+    \setlength{\parindent}{2em}
+        \par{   A. File name with proper info}
+        \par{   B. Error message}
+\subsection{Sample output:}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc}
+    \par{Then standard error will display:}
+        \par\hspace*{1cm}{./mycc -mode [options] infile}
+    \par{Valid modes:}
+        \par\hspace*{1cm}{-0: Version information only}
+        \par\hspace*{1cm}{-1: Part 1 C Lexer}
+        \par\hspace*{1cm}{-2: Part 2 C Preprocessor}
+        \par\hspace*{1cm}{-3: Part 3 C parser}
+        \par\hspace*{1cm}{-4: Part 4 Type Checking}
+        \par\hspace*{1cm}{-5: Part 5 expressions}
+    \newline{}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -1 infile}
+    \par{Output:}
+        \par\hspace*{1cm}{File filename Line line number Token token number Text lexeme}
+    \par{Error Messages:}
+        \par\hspace*{1cm}{Lexer error in file filename line line number}
+        \par\hspace*{1.5cm}{Description}
+            
+\newpage
+%======================================================================
+\section{Part 2}
+%======================================================================
+\subsection{Functionality:}            
+    \par{-Display for mode 2:}
+     \setlength{\parindent}{2em}
+        \par{   A. File name with proper info}
+        \par{   B. Error message}
+\subsection{Sample output:}
+\par{Running}
+        \par\hspace*{1cm}{./mycc}
+    \par{Then standard error will display same as previous part}
+    \newline{}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -2 infile}
+    \par{It will reads all tokens with lines and even in different files}
+    
+    \par\hspace*{1cm}{\#include part:}
+        \par\hspace*{2cm}{compiler will write format as “\textit{location} include expansion" AND recognize token as part 1}
+    
+    \par\hspace*{1cm}{\#define and \#undef part: }
+        \par\hspace*{2cm}{A. define format as “\textit{macro replacement}". The preprocessor identifier macro with the specified replacement text AND then recognize token as part 1. If an identifier match the macro, the token stream switches to the replacement text.}
+        \par\hspace*{2cm}{B. undef directive removes the definition for preprocessor identifier macro, if one exists. Output form looks like "\textit{location} macro expansion"}
+    
+    \par\hspace*{1cm}{\#ifdef part: }
+        \par\hspace*{2cm}{ifdef \textit{macro} + ifndef \textit{macro} where macro is an identifier. If macro is currently defined (via a define directive), then the token stream remains on/off; otherwise, the token stream is switched off/on. This lasts until either a matching else directive, in which case the token stream is toggled, or a matching endif directive.}
+    \newline{}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -2 infile}
+    \par{Output:}
+        \par\hspace*{1cm}{File \textit{filename} Line \textit{line} number Token \textit{token number} Text \textit{lexeme}}
+        \newline{}
+        \par\hspace*{1cm}{If the input stream is the replacement text of a macro, the location should be the text}
+        \par\hspace*{1.5cm}{Macro \textit{macroname}}
+    \par{Error Messages:}
+        \par\hspace*{1cm}{Preprocessor error in file \textit{filename} line \textit{line number}}
+        \par\hspace*{1.5cm}{Description}
+            
+\newpage
+%======================================================================
+\section{Part 3}
+%======================================================================
+\subsection{Functionality:}
+    \par{-Display for mode 3:}
+     \setlength{\parindent}{2em}
+        \par{   A. File name with proper error info}
+        \par{   B. Syntax error message}
+        
+\subsection{Sample output:}
+\par{Running}
+        \par\hspace*{1cm}{./mycc}
+    \par{Then standard error will display same as previous part}
+    \newline{}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -3 infile}
+    \par{It will reads all tokens with lines and check with syntax error}
+    \newline{}
+    \par{Output:}
+        \par\hspace*{1cm}{Parser error in file \textit{filename} line \textit{line} near text \textit{lexeme}}
+        \newline{}
+        \par\hspace*{1cm}{When tested on input files with syntax errors, your compiler will be considered correct if it catches the first syntax error. If the input file is syntactically correct}
+        \par\hspace*{1cm}{File \textit{filename} is syntactically correct}
+
+\newpage
+%======================================================================
+\section{Part 4}
+%======================================================================
+\subsection{Functionality:}
+    \par{-Display for mode 4:}
+     \setlength{\parindent}{2em}
+        \par{   A. File name with proper error info}
+        \par{   B. Syntax error message}
+        \par{   C. type checking error message}
+
+\subsection{Sample output:}
+\par{Running}
+        \par\hspace*{1cm}{./mycc}
+    \par{Then standard error will display same as previous part}
+    \newline{}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -4 infile}
+    \par{It will reads all tokens with lines, check with syntax error, and check types}
+    \newline{}
+    \par{Output:}
+        \par\hspace*{1cm}{Type checking error in file \textit{filename} line \textit{line} near text \textit{lexeme}}
+        \par\hspace*{2.5cm}{\textit{Description}}
+        \newline{}
+        \par\hspace*{1cm}{If there is noerrors, then the ourput should be a report listing each global variable and function definition, and for each function, listing its return type, list of parameters, local variables, for each statement
+        of the form}
+        \par\hspace*{1.5cm}{\textit{expression ;}}
+        \par\hspace*{1cm}{indicating the type of the expression.}
+        \par\hspace*{1.5cm}{Line \textit{linenum:} expression has type \textit{type}}
+
+\newpage
+%======================================================================
+\section{Part 5}
+%======================================================================
+\subsection{Functionality:}
+    \par{-Display for mode 5:}
+     \setlength{\parindent}{2em}
+        \par{   A. File name with proper error info}
+        \par{   B. Syntax error message and type checking error message}
+        \par{   C. output an equivalent program in java assembly language}
+
+\subsection{Sample output:}
+\par{Running}
+        \par\hspace*{1cm}{./mycc}
+    \par{Then standard error will display same as previous part}
+    \newline{}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -5 infile}
+    \par{It will reads all tokens with lines, check with syntax error, and check types}
+    \newline{}
+    \par{Output:}
+        \par\hspace*{1cm}{Code generation error in file \textit{filename} line \textit{line number}
+        \par\hspace*{2.5cm}{\textit{Description}}
+\newpage
+%======================================================================
+\section{Part 6 Continue work based on Part 5}
+%======================================================================
+\subsection{Functionality:}
+    \par{-Display for mode 6:}
+     \setlength{\parindent}{2em}
+        \par{   A. File name with proper error info}
+        \par{   B. Syntax error message and type checking error message}
+        \par{   C. continue processing the input file or exit}
+
+\subsection{Sample output:}
+\par{Running}
+        \par\hspace*{1cm}{./mycc}
+    \par{Then standard error will display same as previous part}
+    \newline{}
+    \par{Running}
+        \par\hspace*{1cm}{./mycc -6 infile}
+    \par{It will reads all tokens with lines, check with syntax error, and check types}
+\end{document}
